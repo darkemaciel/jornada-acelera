@@ -276,11 +276,23 @@
     function generateFilterButtons() {
       const tracks = [...new Set(originalData.map(item => item['Trilha']))];
       const filterButtonsContainer = document.getElementById('filterButtons');
+
+      // 🔥 Limpa botões anteriores antes de recriar
+      filterButtonsContainer.innerHTML = '';
+
+      // Botão "Todos os Módulos"
+      const allButton = document.createElement('button');
+      allButton.innerText = "Todos os Módulos";
+      allButton.onclick = () => filterTable('all');
+      allButton.className = "px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition";
+      filterButtonsContainer.appendChild(allButton);
+
+      // Botões de cada trilha
       tracks.forEach(track => {
         const button = document.createElement('button');
         button.innerText = track;
         button.onclick = () => filterTable(track);
-        button.className = "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition";
+        button.className = "px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition";
         filterButtonsContainer.appendChild(button);
       });
     }
