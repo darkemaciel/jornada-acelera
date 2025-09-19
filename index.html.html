@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Estudos - Painel Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+        .container-main {
+            max-width: 1280px;
+        }
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        .notification {
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+    <script>
+        // REPLACE WITH YOUR OWN FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+            projectId: "YOUR_FIREBASE_PROJECT_ID",
+            storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+            appId: "YOUR_FIREBASE_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        const csvDataString = `Trilha,Módulo,Carga Horária (h),Dias Necessários,Objetivo
+Trilha de SQL e dbt-core,Instalação e Setup,2.0,1,Preparar ambiente para consultas SQL e dbt
+Trilha de SQL e dbt-core,"Comandos de consulta Select, Where, GroupBy",2.0,1,Criar consultas e sumarizar dados
+Trilha de SQL e dbt-core,Joins,2.0,1,Relacionar tabelas em consultas
+Trilha de SQL e dbt-core,Window Function,2.0,1,Criar análises avançadas em SQL
+Trilha de SQL e dbt-core,Projeto Completo,2.0,1,Consolidar fundamentos em um case real
+Trilha de SQL e dbt-core,"CTE, Subqueries, Views, Temporary Tables e Materialized Views",2.0,1,Organizar queries complexas
+Trilha de SQL e dbt-core,Criação de tabelas,2.0,1,Definir modelos relacionais em SQL
+Trilha de SQL e dbt-core,Stored Procedured,2.0,1,Programar lógica dentro do banco
+Trilha de SQL e dbt-core,Triggers e Functions,2.0,1,Programar lógica dentro do banco
+Trilha de SQL e dbt-core,Transações ACID,2.0,1,Garantir consistência e segurança em operações no banco
+Trilha de SQL e dbt-core,Perfomance e Tuning em SQL,2.0,1,Otimizar consultas e bancos grandes
+Trilha de SQL e dbt-core,B-Tree e Index,2.0,1,Otimizar performance de consultas e bancos grandes
+Trilha de SQL e dbt-core,dbt-core: Data Build Tool,4.0,2,Construir modelos de dados em um padrão moderno
+Trilha de Engenharia de Dados + IA,Programação em Python,4.0,2,Aprender os fundamentos de programação para engenharia de dados
+Trilha de Engenharia de Dados + IA,Orientação a Objetos,4.0,2,Aprender a programar em um padrão moderno e complexo
+Trilha de Engenharia de Dados + IA,"Estrutura de Dados e Algoritmos",4.0,2,Dominar estruturas de dados e algoritmos para otimizar código
+Trilha de Engenharia de Dados + IA,Git e Github,2.0,1,Versionar e compartilhar projetos em equipe
+Trilha de Engenharia de Dados + IA,"Infra, Linux e Docker",4.0,2,Montar base de infraestrutura para engenharia de dados
+Trilha de Engenharia de Dados + IA,Airflow Workflow Orchestration,4.0,2,Orquestrar pipelines de dados com Airflow
+Trilha de Engenharia de Dados + IA,Data Pipelines com Airflow 3.0 + dbt com Astro,4.0,2,Construir pipelines modernas com ferramentas integradas
+Trilha de Engenharia de Dados + IA,"Web Scraping, Redis, MongoDB e noSQL",4.0,2,Extrair e manipular dados em escala com diferentes bancos
+Trilha de Engenharia de Dados + IA,"Agentes de IA com Agno, CrewIA e Langchain",4.0,2,Criar agentes de IA avançados integrados a dados
+Trilha de Engenharia de Dados + IA,Extração de dados em PDF e Regex,4.0,2,Ler e transformar dados complexos de documentos
+Trilha de Engenharia de Dados + IA,Event-Driven com Amazon SQS e Lambda AWS,4.0,2,Criar pipelines orientados a eventos
+Trilha de Engenharia de Dados + IA,Arquitetura Streaming com Kafka,4.0,2,Processar dados em tempo real
+Trilha de Engenharia de Dados + IA,"Observabilidade com Prothes, Sentry e OpenTelemetry",4.0,2,"Monitorar pipelines com Prometheus, Sentry e OpenTelemetry"
+Trilha de Engenharia de Dados + IA,Infra as Code com Terraform,4.0,2,Criar infraestrutura escalável e versionada
+Trilha de Engenharia de Dados + IA,Design Sprint para especificação de projetos,4.0,2,Aprender a metodologia de design sprint para projetos de dados e IA`;
+    </script>
+
+    <header class="bg-indigo-600 text-white shadow-lg p-6">
+        <div class="container container-main mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2">Plano de Estudo</h1>
+            <p class="text-xl md:text-2xl">Jornada de 3 Meses para Engenharia de Dados e IA</p>
+        </div>
+    </header>
+
+    <main class="container container-main mx-auto p-4 md:p-8">
+
+        <section id="overview" class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-indigo-200 pb-2">Visão Geral do Plano</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-indigo-100 p-6 rounded-lg shadow-md text-center">
+                    <p class="text-lg font-medium text-indigo-700">Total de Horas</p>
+                    <p id="totalHours" class="text-4xl font-bold text-indigo-900 mt-1">...</p>
+                </div>
+                <div class="bg-indigo-100 p-6 rounded-lg shadow-md text-center">
+                    <p class="text-lg font-medium text-indigo-700">Total de Módulos</p>
+                    <p id="totalModules" class="text-4xl font-bold text-indigo-900 mt-1">...</p>
+                </div>
+                <div class="bg-indigo-100 p-6 rounded-lg shadow-md text-center">
+                    <p class="text-lg font-medium text-indigo-700">Total de Trilhas</p>
+                    <p id="totalTracks" class="text-4xl font-bold text-indigo-900 mt-1">...</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-3">Progresso</h3>
+                    <div class="w-full bg-gray-300 rounded-full h-8 overflow-hidden">
+                        <div id="progressBar" class="bg-indigo-500 h-8 text-white text-center text-sm font-bold leading-8 progress-bar" style="width: 0%;">
+                            <span id="progressText">0% Concluído</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md flex justify-center items-center h-80">
+                    <div class="w-full h-full max-w-sm">
+                        <h3 class="text-xl font-semibold text-center mb-3">Horas por Trilha</h3>
+                        <canvas id="trackChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="detailed-plan" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-indigo-200 pb-2">Plano Detalhado</h2>
+
+            <div id="filterButtons" class="flex flex-wrap gap-2 mb-6">
+                <button onclick="filterTable('all')" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition">Todos os Módulos</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg overflow-hidden">
+                    <thead class="bg-indigo-500 text-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Concluído</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Trilha</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Módulo</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Carga Horária (h)</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Dias Necessários</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Objetivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="notification" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white py-2 px-4 rounded-full shadow-lg opacity-0 notification pointer-events-none">
+        Conteúdo atualizado!
+    </div>
+
+    <script>
+        let myChart;
+        let originalData = [];
+        let completedModules = {};
+        const userIdKey = 'user_study_progress';
+
+        // CSV parsing function with improved logic
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim() !== '');
+            const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+            const data = [];
+            const separator = ',';
+
+            for (let i = 1; i < lines.length; i++) {
+                // Use a more robust regex to handle commas inside quotes
+                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(val => val.trim().replace(/"/g, ''));
+
+                if (values.length === headers.length) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        let value = values[index];
+                        // Handle comma in "Carga Horária (h)" column
+                        if (header === 'Carga Horária (h)') {
+                            value = value.replace(',', '.');
+                        }
+                        row[header] = value;
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        // Save progress to Firestore
+        async function saveProgress() {
+            if (!auth.currentUser) {
+                console.error("User not authenticated.");
+                return;
+            }
+            try {
+                await db.collection('progress').doc(auth.currentUser.uid).set({
+                    completed: completedModules,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showNotification();
+            } catch (error) {
+                console.error("Error saving progress:", error);
+            }
+        }
+
+        // Show a temporary notification
+        function showNotification() {
+            const notificationEl = document.getElementById('notification');
+            notificationEl.style.opacity = '1';
+            notificationEl.style.pointerEvents = 'auto';
+            setTimeout(() => {
+                notificationEl.style.opacity = '0';
+                notificationEl.style.pointerEvents = 'none';
+            }, 3000);
+        }
+
+        // Update stats and progress bar
+        function updateStats() {
+            const totalModules = originalData.length;
+            const completedCount = Object.values(completedModules).filter(Boolean).length;
+            const progressPercentage = (completedCount / totalModules) * 100;
+            
+            document.getElementById('totalModules').innerText = totalModules;
+            document.getElementById('progressText').innerText = `${progressPercentage.toFixed(0)}% Concluído`;
+            document.getElementById('progressBar').style.width = `${progressPercentage}%`;
+        }
+
+        // Update the donut chart
+        function updateChart() {
+            const trackHours = {};
+            originalData.forEach(item => {
+                const track = item['Trilha'];
+                const hours = parseFloat(item['Carga Horária (h)']);
+                // Check if the parsed value is a valid number before adding
+                if (!isNaN(hours)) {
+                    trackHours[track] = (trackHours[track] || 0) + hours;
+                }
+            });
+
+            const labels = Object.keys(trackHours);
+            const data = Object.values(trackHours);
+            
+            const totalHours = data.reduce((sum, h) => sum + h, 0);
+            document.getElementById('totalHours').innerText = `${totalHours.toFixed(1)}`;
+            document.getElementById('totalTracks').innerText = labels.length;
+
+            const backgroundColors = [
+                'rgba(79, 70, 229, 0.8)', // Indigo
+                'rgba(239, 68, 68, 0.8)', // Red
+                'rgba(34, 197, 94, 0.8)', // Green
+                'rgba(251, 191, 36, 0.8)', // Yellow
+                'rgba(59, 130, 246, 0.8)'  // Blue
+            ];
+            const borderColors = [
+                'rgba(79, 70, 229, 1)',
+                'rgba(239, 68, 68, 1)',
+                'rgba(34, 197, 94, 1)',
+                'rgba(251, 191, 36, 1)',
+                'rgba(59, 130, 246, 1)'
+            ];
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Horas',
+                    data: data,
+                    backgroundColor: backgroundColors.slice(0, labels.length),
+                    borderColor: borderColors.slice(0, labels.length),
+                    borderWidth: 1
+                }]
+            };
+
+            const config = {
+                type: 'doughnut',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
+                        }
+                    }
+                }
+            };
+
+            const ctx = document.getElementById('trackChart').getContext('2d');
+            if (myChart) {
+                myChart.destroy();
+            }
+            myChart = new Chart(ctx, config);
+        }
+
+        // Render the table with data
+        function renderTable(dataToDisplay) {
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = ''; // Clear table
+            dataToDisplay.forEach((item, index) => {
+                const isCompleted = completedModules[index] || false;
+                const row = document.createElement('tr');
+                row.className = `border-b transition duration-300 ease-in-out hover:bg-gray-100 ${isCompleted ? 'bg-green-50' : ''}`;
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <input type="checkbox" data-index="${index}" ${isCompleted ? 'checked' : ''} class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">${item['Trilha']}</td>
+                    <td class="px-6 py-4 font-medium">${item['Módulo']}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${item['Carga Horária (h)']}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${item['Dias Necessários']}</td>
+                    <td class="px-6 py-4 whitespace-normal max-w-xs">${item['Objetivo']}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Filter table rows
+        function filterTable(track) {
+            let filteredData = originalData;
+            if (track !== 'all') {
+                filteredData = originalData.filter(item => item['Trilha'] === track);
+            }
+            renderTable(filteredData);
+        }
+
+        // Generate filter buttons dynamically
+        function generateFilterButtons() {
+            const tracks = [...new Set(originalData.map(item => item['Trilha']))];
+            const filterButtonsContainer = document.getElementById('filterButtons');
+
+            tracks.forEach(track => {
+                const button = document.createElement('button');
+                button.innerText = track;
+                button.onclick = () => filterTable(track);
+                button.className = "px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition";
+                filterButtonsContainer.appendChild(button);
+            });
+        }
+
+        // Main initialization function
+        async function init() {
+            originalData = parseCSV(csvDataString);
+
+            // Authenticate anonymously
+            await auth.signInAnonymously().catch(error => {
+                console.error("Anonymous authentication failed:", error);
+            });
+
+            // Listen for auth state changes
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    console.log("Authenticated with Firebase anonymously.");
+                    // Load progress from Firestore
+                    const doc = await db.collection('progress').doc(user.uid).get();
+                    if (doc.exists) {
+                        completedModules = doc.data().completed || {};
+                    }
+                } else {
+                    console.log("User signed out.");
+                }
+
+                // Initial render
+                updateChart();
+                generateFilterButtons();
+                renderTable(originalData);
+                updateStats();
+            });
+
+            // Event listener for checkboxes
+            document.getElementById('dataTableBody').addEventListener('change', (e) => {
+                if (e.target.matches('input[type="checkbox"]')) {
+                    const index = e.target.getAttribute('data-index');
+                    const isChecked = e.target.checked;
+                    completedModules[index] = isChecked;
+
+                    // Update table row styling
+                    const row = e.target.closest('tr');
+                    if (isChecked) {
+                        row.classList.add('bg-green-50');
+                    } else {
+                        row.classList.remove('bg-green-50');
+                    }
+                    
+                    updateStats();
+                    saveProgress();
+                }
+            });
+        }
+
+        // Run the main initialization function
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
