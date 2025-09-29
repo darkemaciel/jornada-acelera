@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: acelera-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - acelera-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: acelera-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: darke@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - "15432:80"
+    depends_on:
+      - postgres
+    networks:
+      - acelera-network
+
+volumes:
+  postgres_data:
+
+networks:
+  acelera-network:
+    driver: bridge
