@@ -24,55 +24,54 @@ Este projeto organiza um **ambiente Docker** para acompanhamento do estudo e exe
 
 ## ⚡ Subindo o ambiente
 
-```bash
-docker compose up -d
-docker ps
-```
----
+### Manualmente
+
+Utilize o arquivo SQL fornecido, `nortwhind.sql`, para popular o seu banco de dados.
+
+### Com Docker e Docker Compose
+
+**Pré-requisito**: Instale o Docker e Docker Compose
+
+* [Começar com Docker](https://www.docker.com/get-started)
+* [Instalar Docker Compose](https://docs.docker.com/compose/install/)
+
+### Passos para configuração com Docker:
+
+1. **Iniciar o Docker Compose** Execute o comando abaixo para subir os serviços:
+    
+    ```
+    docker-compose up -d
+    ```
+    
+    Aguarde as mensagens de configuração, como:
+    
+    ```csharp
+    Creating network "northwind_psql_db" with driver "bridge"
+    Creating volume "northwind_psql_db" with default driver
+    Creating volume "northwind_psql_pgadmin" with default driver
+    Creating pgadmin ... done
+    Creating db      ... done
+    ```
+       
+2. **Conectar o PgAdmin** Acesse o PgAdmin pelo URL: [http://localhost:15432](http://localhost:15432), com a senha `postgres`. 
+
+Configure um novo servidor no PgAdmin:
+    
+    * **General**:
+        * Name: Docker
+    * **Connection**:
+        * Host name/address: postgres
+        * Port: 5432
+        * Maintenance database: docker
+        * Nome de usuário: docker
+        * password: postgres
+
 
 ## Introdução
 
 Bem-vindos ao nosso workshop sobre SQL e PostgreSQL. Hoje, vamos mergulhar nos conceitos básicos de bancos de dados e como o PostgreSQL pode ser utilizado para gerenciar dados de forma eficiente. Nosso objetivo é garantir que todos vocês tenham uma boa base para explorar mais sobre SQL e operações de banco de dados nos próximos dias.
 
-## Por que Postgres?
 
-PostgreSQL é um sistema de gerenciamento de banco de dados relacional (RDBMS) desenvolvido no Departamento de Ciência da Computação da Universidade da Califórnia em Berkeley. POSTGRES foi pioneiro em muitos conceitos que só se tornaram disponíveis em alguns sistemas de banco de dados comerciais muito mais tarde:
-
-* complex queries
-* foreign keys
-* triggers
-* updatable views
-* transactional integrity
-
-Além disso, o PostgreSQL pode ser estendido pelo usuário de várias maneiras, por exemplo, adicionando novos
-
-* data types
-* functions
-* operators
-* aggregate functions
-* index methods
-* procedural languages
-
-## Informações Adicionais 
-
-Além do conteúdo do curso, recomendo alguns outros lugares para estudo.
-
-[Documentação](https://www.postgresql.org/docs/current/index.html) Documentação oficial do Postgres, todas as features estão aqui.
-
-
-[Wiki](https://wiki.postgresql.org/wiki/Main_Page) A wiki do PostgreSQL contém a lista de Perguntas Frequentes (FAQ), lista de tarefas pendentes (TODO) e informações detalhadas sobre muitos outros tópicos.
-
-[Site](https://www.postgresql.org/) na Web O site do PostgreSQL fornece detalhes sobre a última versão e outras informações para tornar seu trabalho ou lazer com o PostgreSQL mais produtivo.
-
-[Comunidade](https://github.com/postgres/postgres) O código O PostgreSQL é um projeto de código aberto. Como tal, depende da comunidade de usuários para suporte contínuo. À medida que você começa a usar o PostgreSQL, dependerá de outros para obter ajuda, seja através da documentação ou através das listas de discussão. Considere devolver o seu conhecimento. Leia as listas de discussão e responda às perguntas. Se você aprender algo que não está na documentação, escreva e contribua com isso. Se você adicionar recursos ao código, contribua com eles.
-
-## Instalação
-
-Antes de poder usar o PostgreSQL, você precisa instalá-lo, é claro. É possível que o PostgreSQL já esteja instalado em seu local, seja porque foi incluído na distribuição do seu sistema operacional ou porque o administrador do sistema já o instalou.
-
-Se você não tem certeza se o PostgreSQL já está disponível ou se você pode usá-lo para suas experimentações, então você pode instalá-lo por conta própria. Fazer isso não é difícil e pode ser um bom exercício.
-
-- Instalando o postgres Local
 
 ## Fundamentos da Arquitetura
 
@@ -88,13 +87,6 @@ Como é típico em aplicações cliente/servidor, o cliente e o servidor podem e
 
 O servidor PostgreSQL pode lidar com múltiplas conexões simultâneas de clientes. Para alcançar isso, ele inicia (“forks”) um novo processo para cada conexão. A partir desse ponto, o cliente e o novo processo servidor se comunicam sem intervenção do processo postgres original. Assim, o processo servidor supervisor está sempre em execução, aguardando conexões de clientes, enquanto os processos de clientes e servidores associados vêm e vão. (Tudo isso, é claro, é invisível para o usuário. Só mencionamos isso aqui para completude.)
 
-## Criando um Banco de Dados
-
-O primeiro teste para verificar se você pode acessar o servidor de banco de dados é tentar criar um banco de dados. Um servidor PostgreSQL em execução pode gerenciar vários bancos de dados. Tipicamente, um banco de dados separado é usado para cada projeto ou usuário.
-
-Para isso vamos entrar dentro do nosso cliente `pgAdmin 4`
-
-Também podemos nos conectar em servidores remoto, ex: `Render`
 
 ## Criando nosso Schema
 
@@ -187,4 +179,3 @@ SELECT * FROM customers WHERE country IN ('Germany', 'France', 'UK');
 SELECT * FROM customers WHERE country NOT IN ('Germany', 'France', 'UK');
 ```
 ---
-
